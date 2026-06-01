@@ -224,7 +224,7 @@ npm run dev
 ---
 
 ## 👨‍💻 Author
-
+Name - Deepak Kumar
 **EasyMed Technologies Pvt. Ltd.**  
 Built as a DBMS-based Healthcare Portal project.
 
