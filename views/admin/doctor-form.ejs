@@ -1,0 +1,73 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-admin', {activePage:'doctors'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4><%= doctor ? 'Edit Doctor' : 'Add New Doctor' %></h4><p>Fill in the doctor's profile details</p></div>
+    <a href="/admin/doctors" class="btn btn-sm btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back</a>
+  </div>
+  <div class="p-4">
+    <% if(errors && errors.length){ %><div class="alert alert-danger"><ul class="mb-0 ps-3"><% errors.forEach(e=>{%><li><%=e.msg%></li><%})%></ul></div><% } %>
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="page-card">
+          <div class="page-card-header"><h5 class="mb-0">Doctor Information</h5></div>
+          <div class="page-card-body">
+            <form action="/admin/doctors/add" method="POST">
+              <div class="form-section-title">Personal Details</div>
+              <div class="row g-3 mt-1">
+                <div class="col-md-4"><label class="form-label">First Name *</label><input type="text" name="first_name" class="form-control" required></div>
+                <div class="col-md-4"><label class="form-label">Last Name *</label><input type="text" name="last_name" class="form-control" required></div>
+                <div class="col-md-4"><label class="form-label">Gender *</label><select name="gender" class="form-select" required><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+                <div class="col-md-6"><label class="form-label">Email *</label><input type="email" name="email" class="form-control" required></div>
+                <div class="col-md-6"><label class="form-label">Phone *</label><input type="tel" name="phone" class="form-control" required></div>
+                <div class="col-md-6"><label class="form-label">Date of Birth</label><input type="date" name="date_of_birth" class="form-control"></div>
+                <div class="col-md-6"><label class="form-label">Joining Date</label><input type="date" name="joining_date" class="form-control"></div>
+              </div>
+              <div class="form-section-title mt-4">Professional Details</div>
+              <div class="row g-3 mt-1">
+                <div class="col-md-6"><label class="form-label">Department</label><select name="dept_id" class="form-select"><option value="">None</option><% depts.forEach(d=>{%><option value="<%=d.dept_id%>"><%=d.dept_name%></option><%})%></select></div>
+                <div class="col-md-6"><label class="form-label">Specialization *</label><input type="text" name="specialization" class="form-control" required></div>
+                <div class="col-md-12"><label class="form-label">Qualification</label><input type="text" name="qualification" class="form-control" placeholder="MBBS, MD, DM…"></div>
+                <div class="col-md-4"><label class="form-label">Experience (Years)</label><input type="number" name="experience_years" class="form-control" min="0" value="0"></div>
+                <div class="col-md-4"><label class="form-label">License Number</label><input type="text" name="license_number" class="form-control"></div>
+                <div class="col-md-4"><label class="form-label">Slot Duration (mins)</label><input type="number" name="slot_duration" class="form-control" value="30"></div>
+                <div class="col-md-4"><label class="form-label">Consultation Fee (₹)</label><input type="number" name="consultation_fee" class="form-control" value="500"></div>
+                <div class="col-md-4"><label class="form-label">Follow-up Fee (₹)</label><input type="number" name="follow_up_fee" class="form-control" value="300"></div>
+                <div class="col-md-4"><label class="form-label">Max Patients/Day</label><input type="number" name="max_patients_per_day" class="form-control" value="20"></div>
+                <div class="col-md-12"><label class="form-label">Available Days</label>
+                  <div class="d-flex flex-wrap gap-2 mt-1">
+                    <% ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(day=>{ %>
+                    <div class="form-check"><input class="form-check-input" type="checkbox" name="days" value="<%=day%>" id="day_<%=day%>" checked><label class="form-check-label small" for="day_<%=day%>"><%=day%></label></div>
+                    <% }) %>
+                  </div>
+                </div>
+                <div class="col-12"><label class="form-label">Biography</label><textarea name="bio" class="form-control" rows="3" placeholder="Doctor's professional bio…"></textarea></div>
+              </div>
+              <div class="form-section-title mt-4">Account Credentials</div>
+              <div class="row g-3 mt-1">
+                <div class="col-md-6"><label class="form-label">Password</label><input type="password" name="password" class="form-control" placeholder="Default: Doctor@123"></div>
+              </div>
+              <div class="mt-4"><button type="submit" class="btn btn-primary px-4">Save Doctor <i class="fas fa-save ms-2"></i></button></div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="page-card">
+          <div class="page-card-header"><h5 class="mb-0">Quick Guide</h5></div>
+          <div class="page-card-body">
+            <div class="af-item mb-3"><i class="fas fa-info-circle text-primary"></i><div><small>A unique Doctor Code will be auto-generated (e.g. DOC000001)</small></div></div>
+            <div class="af-item mb-3"><i class="fas fa-lock text-warning"></i><div><small>Default password is <strong>Doctor@123</strong>. Doctor can change after first login.</small></div></div>
+            <div class="af-item mb-3"><i class="fas fa-calendar text-success"></i><div><small>Set working days to allow patient appointment booking.</small></div></div>
+            <div class="af-item"><i class="fas fa-rupee-sign text-info"></i><div><small>Consultation fee will be auto-applied when patients book appointments.</small></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body></html>

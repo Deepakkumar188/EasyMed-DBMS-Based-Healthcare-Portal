@@ -1,0 +1,62 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-patient', {activePage:'lab'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>Lab Results</h4><p><%= tests.length %> lab tests ordered</p></div>
+  </div>
+  <div class="p-4">
+    <%- include('../partials/flash') %>
+    <div class="page-card">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light"><tr><th>Test</th><th>Doctor</th><th>Category</th><th>Ordered</th><th>Result Date</th><th>Urgency</th><th>Status</th><th>Result</th></tr></thead>
+          <tbody>
+            <% tests.forEach(t=>{ %>
+            <tr>
+              <td><div class="fw-600 small"><%= t.test_name %></div><code style="font-size:10px"><%= t.test_code %></code></td>
+              <td><small>Dr. <%= t.doctor_name %></small></td>
+              <td><span class="badge bg-light text-dark"><%= t.test_category %></span></td>
+              <td><small><%= new Date(t.ordered_date).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) %></small></td>
+              <td><small><%= t.result_date ? new Date(t.result_date).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) : '—' %></small></td>
+              <td><span class="badge <%= t.urgency==='STAT'?'bg-danger':t.urgency==='Urgent'?'bg-warning text-dark':'bg-success' %>"><%= t.urgency %></span></td>
+              <td><span class="badge status-<%= t.status.toLowerCase().replace(' ','') %>"><%= t.status %></span></td>
+              <td>
+                <% if(t.result){ %>
+                <button class="btn btn-xs btn-outline-primary" data-bs-toggle="modal" data-bs-target="#resultModal"
+                  onclick="showResult('<%= t.test_name %>','<%= t.result.replace(/'/g,'') %>','<%= t.normal_range||'' %>','<%= t.interpretation||'' %>')">View</button>
+                <% } else { %><span class="text-muted small">Pending</span><% } %>
+              </td>
+            </tr>
+            <% }) %>
+            <% if(!tests.length){ %><tr><td colspan="8" class="text-center text-muted py-5"><i class="fas fa-flask fa-2x mb-2 d-block opacity-25"></i>No lab tests ordered yet</td></tr><% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Result Modal -->
+<div class="modal fade" id="resultModal" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title" id="resultTitle"></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+      <div class="mb-3"><label class="info-item"><label>Result</label></label><div class="fw-600" id="resultValue"></div></div>
+      <div class="mb-3"><label class="info-item"><label>Normal Range</label></label><div id="resultRange" class="text-muted small"></div></div>
+      <div id="resultInterpSection"><label class="info-item"><label>Interpretation</label></label><div id="resultInterp" class="small"></div></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button></div>
+  </div></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+<script>
+function showResult(name, result, range, interp){
+  document.getElementById('resultTitle').textContent = name;
+  document.getElementById('resultValue').textContent = result;
+  document.getElementById('resultRange').textContent = range || 'Not specified';
+  document.getElementById('resultInterp').textContent = interp || 'No interpretation available';
+}
+</script>
+</body></html>

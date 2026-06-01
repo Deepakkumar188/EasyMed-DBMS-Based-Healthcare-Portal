@@ -1,0 +1,28 @@
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <i class="fas fa-heartbeat"></i> Easy<span>Med</span>
+  </div>
+  <div class="sidebar-user">
+    <div class="user-avatar"><%= user.first_name[0] %><%= user.last_name[0] %></div>
+    <div class="user-info">
+      <div class="user-name"><%= user.first_name %> <%= user.last_name %></div>
+      <div class="user-role">Administrator</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="/admin/dashboard" class="sidebar-link <%= locals.activePage==='dashboard'?'active':'' %>"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <div class="sidebar-section">MANAGEMENT</div>
+    <a href="/admin/patients" class="sidebar-link <%= locals.activePage==='patients'?'active':'' %>"><i class="fas fa-users"></i> Patients</a>
+    <a href="/admin/doctors" class="sidebar-link <%= locals.activePage==='doctors'?'active':'' %>"><i class="fas fa-user-md"></i> Doctors</a>
+    <a href="/admin/appointments" class="sidebar-link <%= locals.activePage==='appointments'?'active':'' %>"><i class="fas fa-calendar-check"></i> Appointments</a>
+    <a href="/admin/departments" class="sidebar-link <%= locals.activePage==='departments'?'active':'' %>"><i class="fas fa-hospital"></i> Departments</a>
+    <div class="sidebar-section">MEDICAL</div>
+    <a href="/admin/lab-tests" class="sidebar-link <%= locals.activePage==='lab'?'active':'' %>"><i class="fas fa-flask"></i> Lab Tests</a>
+    <a href="/admin/billing" class="sidebar-link <%= locals.activePage==='billing'?'active':'' %>"><i class="fas fa-file-invoice-dollar"></i> Billing</a>
+    <div class="sidebar-section">ANALYTICS</div>
+    <a href="/admin/reports" class="sidebar-link <%= locals.activePage==='reports'?'active':'' %>"><i class="fas fa-chart-bar"></i> Reports</a>
+    <div class="sidebar-section">SYSTEM</div>
+    <a href="/admin/settings" class="sidebar-link <%= locals.activePage==='settings'?'active':'' %>"><i class="fas fa-cog"></i> Settings</a>
+    <a href="/auth/logout" class="sidebar-link text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </nav>
+</div>

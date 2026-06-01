@@ -1,0 +1,55 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-admin', {activePage:'settings'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>System Settings</h4><p>Configure portal-wide settings</p></div>
+  </div>
+  <div class="p-4">
+    <%- include('../partials/flash') %>
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="page-card">
+          <div class="page-card-header"><h5 class="mb-0">Configuration Settings</h5></div>
+          <div class="page-card-body">
+            <form action="/admin/settings/update" method="POST">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead class="table-light"><tr><th>Key</th><th>Description</th><th>Value</th></tr></thead>
+                  <tbody>
+                    <% settings.forEach(s => { %>
+                    <tr>
+                      <td><code class="small"><%= s.setting_key %></code></td>
+                      <td><small class="text-muted"><%= s.description %></small></td>
+                      <td>
+                        <input type="text" name="<%= s.setting_key %>" class="form-control form-control-sm" value="<%= s.setting_value %>">
+                      </td>
+                    </tr>
+                    <% }) %>
+                  </tbody>
+                </table>
+              </div>
+              <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Save Settings</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="page-card">
+          <div class="page-card-header"><h5 class="mb-0">System Info</h5></div>
+          <div class="page-card-body">
+            <div class="info-item mb-3"><label>Portal Version</label><span class="badge bg-primary">v1.0.0</span></div>
+            <div class="info-item mb-3"><label>Node.js</label><span><%= process.version %></span></div>
+            <div class="info-item mb-3"><label>Environment</label><span><%= process.env.NODE_ENV || 'development' %></span></div>
+            <div class="info-item mb-3"><label>Database</label><span class="badge bg-success">MySQL Connected</span></div>
+            <div class="info-item"><label>Last Updated</label><span><%= new Date().toLocaleDateString('en-IN') %></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body></html>

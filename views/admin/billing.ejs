@@ -1,0 +1,47 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-admin', {activePage:'billing'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>Billing & Payments</h4><p>Manage all patient bills and transactions</p></div>
+  </div>
+  <div class="p-4">
+    <%- include('../partials/flash') %>
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
+      <% const totalRevenue = bills.filter(b=>b.payment_status==='Paid').reduce((s,b)=>s+parseFloat(b.total_amount||0),0);
+         const totalPending = bills.filter(b=>b.payment_status!=='Paid').reduce((s,b)=>s+parseFloat(b.balance_amount||0),0); %>
+      <div class="col-md-3"><div class="stat-card-dash bg-gradient-success text-white"><div class="scd-icon"><i class="fas fa-check-circle"></i></div><div class="scd-info"><h3>₹<%= totalRevenue.toLocaleString() %></h3><p>Total Collected</p></div></div></div>
+      <div class="col-md-3"><div class="stat-card-dash bg-gradient-warning text-white"><div class="scd-icon"><i class="fas fa-clock"></i></div><div class="scd-info"><h3>₹<%= totalPending.toLocaleString() %></h3><p>Total Pending</p></div></div></div>
+      <div class="col-md-3"><div class="stat-card-dash bg-white border"><div class="scd-icon text-primary"><i class="fas fa-file-invoice"></i></div><div class="scd-info"><h3><%= bills.length %></h3><p>Total Bills</p></div></div></div>
+      <div class="col-md-3"><div class="stat-card-dash bg-white border"><div class="scd-icon text-danger"><i class="fas fa-exclamation-triangle"></i></div><div class="scd-info"><h3><%= bills.filter(b=>b.payment_status==='Overdue').length %></h3><p>Overdue Bills</p></div></div></div>
+    </div>
+    <div class="page-card">
+      <div class="page-card-header"><h5 class="mb-0">All Bills</h5></div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light"><tr><th>Bill No.</th><th>Patient</th><th>Date</th><th>Total</th><th>Paid</th><th>Balance</th><th>Status</th><th>Method</th></tr></thead>
+          <tbody>
+            <% bills.forEach(b => { %>
+            <tr>
+              <td><code><%= b.bill_number %></code></td>
+              <td><div class="d-flex align-items-center gap-2"><div class="mini-avatar"><%= b.patient_name[0] %></div><div><div class="fw-600 small"><%= b.patient_name %></div><div class="text-muted" style="font-size:11px"><%= b.patient_code %></div></div></div></td>
+              <td><small><%= new Date(b.bill_date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) %></small></td>
+              <td class="fw-600">₹<%= parseFloat(b.total_amount).toLocaleString() %></td>
+              <td class="text-success">₹<%= parseFloat(b.paid_amount).toLocaleString() %></td>
+              <td class="text-danger">₹<%= parseFloat(b.balance_amount).toLocaleString() %></td>
+              <td><span class="badge status-<%= b.payment_status.toLowerCase() %>"><%= b.payment_status %></span></td>
+              <td><span class="small text-muted"><%= b.payment_method || '—' %></span></td>
+            </tr>
+            <% }) %>
+            <% if(!bills.length){ %><tr><td colspan="8" class="text-center text-muted py-5">No bills found</td></tr><% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body></html>

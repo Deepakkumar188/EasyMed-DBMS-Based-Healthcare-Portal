@@ -1,0 +1,182 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-patient', {activePage:'book'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>Book Appointment</h4><p>Schedule a consultation with our specialists</p></div>
+  </div>
+  <div class="p-4">
+    <%- include('../partials/flash') %>
+    <% if(errors && errors.length){ %><div class="alert alert-danger"><ul class="mb-0 ps-3"><% errors.forEach(e=>{%><li><%=e.msg%></li><%})%></ul></div><% } %>
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="page-card">
+          <div class="page-card-header"><h5 class="mb-0">Appointment Details</h5></div>
+          <div class="page-card-body">
+            <form action="/patient/book-appointment" method="POST" id="bookingForm">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Select Department</label>
+                  <select name="dept_filter" id="deptFilter" class="form-select">
+                    <option value="">All Departments</option>
+                    <% depts.forEach(d=>{%><option value="<%=d.dept_id%>"><%=d.dept_name%></option><%})%>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Select Doctor *</label>
+                  <select name="doctor_id" id="doctorSelect" class="form-select" required onchange="loadDoctorInfo(this.value)">
+                    <option value="">Choose a doctor…</option>
+                    <% doctors.forEach(d=>{%><option value="<%=d.doctor_id%>" data-dept="<%=d.dept_id%>" data-fee="<%=d.consultation_fee%>" data-followup="<%=d.follow_up_fee%>" data-spec="<%=d.specialization%>">Dr. <%=d.full_name%> – <%=d.specialization%></option><%})%>
+                  </select>
+                </div>
+                <!-- Doctor Info Card (shown after selection) -->
+                <div class="col-12" id="doctorInfo" style="display:none">
+                  <div class="page-card bg-light" style="border:1px solid var(--gray-200)">
+                    <div class="page-card-body py-2">
+                      <div class="d-flex align-items-center gap-3">
+                        <div class="mini-avatar" style="width:44px;height:44px;font-size:1rem" id="docAvatar">?</div>
+                        <div><div class="fw-700" id="docName"></div><div class="small text-muted" id="docSpec"></div></div>
+                        <div class="ms-auto text-end"><div class="small text-muted">Consultation</div><div class="fw-700 text-primary" id="docFee"></div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Appointment Date *</label>
+                  <input type="date" name="appointment_date" id="aptDate" class="form-control" required
+                    min="<%= new Date(Date.now()+86400000).toISOString().split('T')[0] %>"
+                    max="<%= new Date(Date.now()+30*86400000).toISOString().split('T')[0] %>"
+                    onchange="loadSlots()">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Appointment Type *</label>
+                  <select name="appointment_type" class="form-select" required onchange="updateFee(this.value)">
+                    <option value="New">New Consultation</option>
+                    <option value="Follow-up">Follow-up</option>
+                    <option value="Emergency">Emergency</option>
+                    <option value="Teleconsult">Teleconsult</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Available Time Slots</label>
+                  <div id="slotsContainer">
+                    <div class="text-muted small py-2"><i class="fas fa-info-circle me-1"></i>Select a doctor and date to see available slots</div>
+                  </div>
+                  <input type="hidden" name="appointment_time" id="selectedTime" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Priority</label>
+                  <select name="priority" class="form-select">
+                    <option value="Normal">Normal</option>
+                    <option value="Urgent">Urgent</option>
+                    <option value="Emergency">Emergency</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Reason for Visit *</label>
+                  <input type="text" name="reason" class="form-control" placeholder="Brief reason…" required>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Symptoms / Additional Notes</label>
+                  <textarea name="symptoms" class="form-control" rows="3" placeholder="Describe your symptoms in detail…"></textarea>
+                </div>
+              </div>
+              <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary px-4" id="submitBtn"><i class="fas fa-calendar-check me-2"></i>Confirm Booking</button>
+                <a href="/patient/dashboard" class="btn btn-outline-secondary">Cancel</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- Booking Guidelines -->
+      <div class="col-lg-4">
+        <div class="page-card mb-3">
+          <div class="page-card-header"><h5 class="mb-0">Booking Summary</h5></div>
+          <div class="page-card-body">
+            <div class="info-item mb-2"><label>Doctor</label><span id="sum_doctor">Not selected</span></div>
+            <div class="info-item mb-2"><label>Date</label><span id="sum_date">Not selected</span></div>
+            <div class="info-item mb-2"><label>Time</label><span id="sum_time">Not selected</span></div>
+            <div class="info-item mb-2"><label>Type</label><span id="sum_type">New Consultation</span></div>
+            <hr>
+            <div class="d-flex justify-content-between align-items-center"><span class="fw-600">Consultation Fee</span><span class="fw-700 text-primary" id="sum_fee">₹—</span></div>
+          </div>
+        </div>
+        <div class="page-card">
+          <div class="page-card-header"><h5 class="mb-0">Guidelines</h5></div>
+          <div class="page-card-body">
+            <div class="af-item mb-2"><i class="fas fa-clock text-primary"></i><small>Arrive 15 min before your appointment</small></div>
+            <div class="af-item mb-2"><i class="fas fa-file-medical text-success"></i><small>Carry previous prescriptions and reports</small></div>
+            <div class="af-item mb-2"><i class="fas fa-id-card text-info"></i><small>Bring a valid photo ID and insurance card</small></div>
+            <div class="af-item mb-2"><i class="fas fa-times-circle text-danger"></i><small>Cancel at least 2 hours before to avoid penalty</small></div>
+            <div class="af-item"><i class="fas fa-phone text-warning"></i><small>Call us at +91-22-12345678 for emergency</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+<script>
+const doctors = <%- JSON.stringify(doctors) %>;
+let selectedFee = 0, followUpFee = 0;
+
+document.getElementById('deptFilter').addEventListener('change', function(){
+  const deptId = this.value;
+  document.querySelectorAll('#doctorSelect option').forEach(opt => {
+    if(!opt.value) return;
+    opt.style.display = (!deptId || opt.dataset.dept == deptId) ? '' : 'none';
+  });
+  document.getElementById('doctorSelect').value = '';
+  document.getElementById('doctorInfo').style.display = 'none';
+});
+
+function loadDoctorInfo(id){
+  const opt = document.querySelector('#doctorSelect option[value="'+id+'"]');
+  if(!id||!opt){ document.getElementById('doctorInfo').style.display='none'; return; }
+  const name = opt.textContent.replace(' – '+opt.dataset.spec,'');
+  document.getElementById('docName').textContent = name;
+  document.getElementById('docSpec').textContent = opt.dataset.spec;
+  document.getElementById('docFee').textContent = '₹'+opt.dataset.fee;
+  document.getElementById('docAvatar').textContent = name.split(' ').map(n=>n[0]).join('').replace('Dr.','').substring(0,2);
+  document.getElementById('doctorInfo').style.display = 'block';
+  selectedFee = parseFloat(opt.dataset.fee);
+  followUpFee = parseFloat(opt.dataset.followup);
+  document.getElementById('sum_doctor').textContent = name;
+  document.getElementById('sum_fee').textContent = '₹'+selectedFee;
+  loadSlots();
+}
+
+function updateFee(type){
+  const fee = type==='Follow-up' ? followUpFee : selectedFee;
+  if(fee) document.getElementById('sum_fee').textContent = '₹'+fee;
+  document.getElementById('sum_type').textContent = type;
+}
+
+async function loadSlots(){
+  const doctorId = document.getElementById('doctorSelect').value;
+  const date = document.getElementById('aptDate').value;
+  document.getElementById('sum_date').textContent = date || 'Not selected';
+  if(!doctorId||!date){ return; }
+  document.getElementById('slotsContainer').innerHTML = '<div class="text-muted small"><i class="fas fa-spinner fa-spin me-1"></i>Loading slots…</div>';
+  try{
+    const res = await fetch(`/appointments/slots?doctor_id=${doctorId}&date=${date}`);
+    const data = await res.json();
+    const slots = data.slots || [];
+    if(!slots.length){ document.getElementById('slotsContainer').innerHTML='<div class="text-muted small py-2">No slots available for this day</div>'; return; }
+    document.getElementById('slotsContainer').innerHTML = '<div class="time-slots">' +
+      slots.map(s=>`<div class="time-slot ${s.availability==='Booked'?'booked':''}" onclick="${s.availability!=='Booked'?`selectSlot('${s.slot_time}','${s.slot_time_formatted}',this)`:''}">
+        <i class="fas fa-clock me-1" style="font-size:10px"></i>${s.slot_time_formatted}</div>`).join('') + '</div>';
+  }catch(e){ document.getElementById('slotsContainer').innerHTML='<div class="text-danger small">Failed to load slots</div>'; }
+}
+
+function selectSlot(time, formatted, el){
+  document.querySelectorAll('.time-slot').forEach(s=>s.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('selectedTime').value = time;
+  document.getElementById('sum_time').textContent = formatted;
+}
+</script>
+</body></html>

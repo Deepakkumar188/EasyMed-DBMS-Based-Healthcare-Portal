@@ -1,0 +1,25 @@
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-brand"><i class="fas fa-heartbeat"></i> Easy<span>Med</span></div>
+  <div class="sidebar-user">
+    <div class="user-avatar"><%= user.first_name[0] %><%= user.last_name[0] %></div>
+    <div class="user-info">
+      <div class="user-name"><%= user.first_name %> <%= user.last_name %></div>
+      <div class="user-role">Patient</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="/patient/dashboard" class="sidebar-link <%= locals.activePage==='dashboard'?'active':'' %>"><i class="fas fa-th-large"></i> Dashboard</a>
+    <div class="sidebar-section">APPOINTMENTS</div>
+    <a href="/patient/book-appointment" class="sidebar-link <%= locals.activePage==='book'?'active':'' %>"><i class="fas fa-calendar-plus"></i> Book Appointment</a>
+    <a href="/patient/appointments" class="sidebar-link <%= locals.activePage==='appointments'?'active':'' %>"><i class="fas fa-calendar-check"></i> My Appointments</a>
+    <div class="sidebar-section">HEALTH</div>
+    <a href="/patient/medical-records" class="sidebar-link <%= locals.activePage==='records'?'active':'' %>"><i class="fas fa-file-medical"></i> Medical Records</a>
+    <a href="/patient/prescriptions" class="sidebar-link <%= locals.activePage==='prescriptions'?'active':'' %>"><i class="fas fa-prescription-bottle-alt"></i> Prescriptions</a>
+    <a href="/patient/lab-results" class="sidebar-link <%= locals.activePage==='lab'?'active':'' %>"><i class="fas fa-flask"></i> Lab Results</a>
+    <div class="sidebar-section">BILLING</div>
+    <a href="/patient/bills" class="sidebar-link <%= locals.activePage==='bills'?'active':'' %>"><i class="fas fa-receipt"></i> Bills & Payments</a>
+    <div class="sidebar-section">ACCOUNT</div>
+    <a href="/patient/profile" class="sidebar-link <%= locals.activePage==='profile'?'active':'' %>"><i class="fas fa-user-edit"></i> My Profile</a>
+    <a href="/auth/logout" class="sidebar-link text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </nav>
+</div>

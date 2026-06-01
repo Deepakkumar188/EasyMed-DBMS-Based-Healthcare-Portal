@@ -1,0 +1,63 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-patient', {activePage:'records'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>Medical Records</h4><p><%= records.length %> records on file</p></div>
+  </div>
+  <div class="p-4">
+    <%- include('../partials/flash') %>
+    <% if(records.length){ records.forEach(r=>{ %>
+    <div class="record-card" onclick="toggleRecord(this)">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="fw-700"><%= new Date(r.visit_date).toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'}) %></div>
+          <div class="small text-muted">Dr. <%= r.doctor_name %> · <%= r.specialization %></div>
+        </div>
+        <div class="text-end">
+          <% if(r.follow_up_date){ %><span class="badge bg-info">Follow-up: <%= new Date(r.follow_up_date).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) %></span><% } %>
+          <i class="fas fa-chevron-down ms-2 text-muted toggle-icon"></i>
+        </div>
+      </div>
+      <div class="record-detail mt-3" style="display:none">
+        <div class="row g-3">
+          <% if(r.chief_complaint){ %><div class="col-md-6"><div class="info-item"><label>Chief Complaint</label><span><%= r.chief_complaint %></span></div></div><% } %>
+          <% if(r.diagnosis){ %><div class="col-md-6"><div class="info-item"><label>Diagnosis</label><span class="text-danger"><%= r.diagnosis %></span></div></div><% } %>
+          <% if(r.vital_signs){ %>
+          <div class="col-12">
+            <label class="info-item"><label>Vital Signs</label></label>
+            <% try{ const v=JSON.parse(r.vital_signs); %>
+            <div class="d-flex flex-wrap gap-3 mt-1">
+              <% if(v.bp){ %><span class="badge bg-light text-dark border"><i class="fas fa-heartbeat text-danger me-1"></i>BP: <%= v.bp %></span><% } %>
+              <% if(v.pulse){ %><span class="badge bg-light text-dark border"><i class="fas fa-wave-square text-primary me-1"></i>Pulse: <%= v.pulse %>/min</span><% } %>
+              <% if(v.temp){ %><span class="badge bg-light text-dark border"><i class="fas fa-thermometer text-warning me-1"></i><%= v.temp %>°F</span><% } %>
+              <% if(v.spo2){ %><span class="badge bg-light text-dark border"><i class="fas fa-lungs text-info me-1"></i>SpO2: <%= v.spo2 %>%</span><% } %>
+              <% if(v.weight){ %><span class="badge bg-light text-dark border"><i class="fas fa-weight me-1"></i><%= v.weight %> kg</span><% } %>
+            </div>
+            <% }catch(e){} %>
+          </div>
+          <% } %>
+          <% if(r.treatment_plan){ %><div class="col-md-6"><div class="info-item"><label>Treatment Plan</label><span><%= r.treatment_plan %></span></div></div><% } %>
+          <% if(r.prescription){ %><div class="col-md-6"><div class="info-item"><label>Prescription Notes</label><span><%= r.prescription %></span></div></div><% } %>
+          <% if(r.lab_tests_ordered){ %><div class="col-md-6"><div class="info-item"><label>Lab Tests Ordered</label><span><%= r.lab_tests_ordered %></span></div></div><% } %>
+          <% if(r.doctor_notes){ %><div class="col-12"><div class="info-item"><label>Doctor Notes</label><span><%= r.doctor_notes %></span></div></div><% } %>
+        </div>
+      </div>
+    </div>
+    <% }) } else { %>
+    <div class="text-center text-muted py-5"><i class="fas fa-file-medical fa-3x mb-3 d-block opacity-25"></i><p>No medical records available yet. Records are added after your consultation.</p></div>
+    <% } %>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+<script>
+function toggleRecord(el){
+  const detail = el.querySelector('.record-detail');
+  const icon = el.querySelector('.toggle-icon');
+  detail.style.display = detail.style.display==='none'?'block':'none';
+  icon.classList.toggle('fa-chevron-down'); icon.classList.toggle('fa-chevron-up');
+}
+</script>
+</body></html>

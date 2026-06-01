@@ -1,0 +1,21 @@
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-brand"><i class="fas fa-heartbeat"></i> Easy<span>Med</span></div>
+  <div class="sidebar-user">
+    <div class="user-avatar"><%= user.first_name[0] %><%= user.last_name[0] %></div>
+    <div class="user-info">
+      <div class="user-name">Dr. <%= user.first_name %> <%= user.last_name %></div>
+      <div class="user-role">Doctor</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="/doctor/dashboard" class="sidebar-link <%= locals.activePage==='dashboard'?'active':'' %>"><i class="fas fa-th-large"></i> Dashboard</a>
+    <div class="sidebar-section">APPOINTMENTS</div>
+    <a href="/doctor/appointments" class="sidebar-link <%= locals.activePage==='appointments'?'active':'' %>"><i class="fas fa-calendar-check"></i> Appointments</a>
+    <a href="/doctor/schedule" class="sidebar-link <%= locals.activePage==='schedule'?'active':'' %>"><i class="fas fa-clock"></i> My Schedule</a>
+    <div class="sidebar-section">PATIENTS</div>
+    <a href="/doctor/patients" class="sidebar-link <%= locals.activePage==='patients'?'active':'' %>"><i class="fas fa-users"></i> My Patients</a>
+    <div class="sidebar-section">ACCOUNT</div>
+    <a href="/doctor/profile" class="sidebar-link <%= locals.activePage==='profile'?'active':'' %>"><i class="fas fa-user-edit"></i> My Profile</a>
+    <a href="/auth/logout" class="sidebar-link text-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+  </nav>
+</div>

@@ -1,0 +1,53 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-doctor', {activePage:'schedule'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>My Schedule</h4><p>Weekly availability &amp; working hours</p></div>
+  </div>
+  <div class="p-4">
+    <%- include('../partials/flash') %>
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="page-card">
+          <div class="page-card-header"><h5 class="mb-0">Weekly Schedule</h5></div>
+          <div class="page-card-body">
+            <% const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']; %>
+            <% days.forEach(day => {
+                 const s = schedules.find(x => x.day_of_week === day);
+            %>
+            <div class="d-flex align-items-center py-3 border-bottom">
+              <div style="width:120px" class="fw-600 small"><%= day %></div>
+              <% if(s && s.is_available){ %>
+                <span class="badge bg-success me-3">Available</span>
+                <span class="small text-muted">
+                  <i class="fas fa-clock me-1"></i><%= s.start_time %> – <%= s.end_time %>
+                  <% if(s.break_start){ %> &nbsp;|&nbsp; Break: <%= s.break_start %> – <%= s.break_end %><% } %>
+                </span>
+              <% } else { %>
+                <span class="badge bg-secondary">Off</span>
+              <% } %>
+            </div>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="page-card">
+          <div class="page-card-header"><h5 class="mb-0">Summary</h5></div>
+          <div class="page-card-body">
+            <div class="info-item mb-3"><label>Working Days</label><span><%= schedules.filter(s=>s.is_available).length %> days/week</span></div>
+            <div class="info-item mb-3"><label>Slot Duration</label><span><%= doctor.slot_duration %> minutes</span></div>
+            <div class="info-item mb-3"><label>Max Patients/Day</label><span><%= doctor.max_patients_per_day %></span></div>
+            <div class="info-item mb-3"><label>Consultation Fee</label><span class="text-primary fw-600">₹<%= doctor.consultation_fee %></span></div>
+            <div class="info-item"><label>Follow-up Fee</label><span class="text-success fw-600">₹<%= doctor.follow_up_fee %></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body></html>

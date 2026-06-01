@@ -1,0 +1,34 @@
+<!DOCTYPE html><html lang="en"><head><%- include('partials/head') %></head>
+<body><%- include('partials/navbar') %>
+<section class="py-5" style="background:linear-gradient(135deg,#0d1b4b,#0066cc)">
+  <div class="container text-center py-4 text-white"><h1 class="fw-bold">Our Services</h1><p class="opacity-75">World-class medical care across all specialties</p></div>
+</section>
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4 mb-5">
+      <% const icons=['fa-heart','fa-brain','fa-bone','fa-baby','fa-female','fa-allergies','fa-eye','fa-ear','fa-ribbon','fa-head-side-brain','fa-stomach','fa-lungs','fa-syringe','fa-kidneys','fa-ambulance'];
+         depts.forEach((d,i) => { %>
+      <div class="col-lg-4 col-md-6">
+        <div class="dept-card p-4">
+          <div class="dept-icon mb-3"><i class="fas <%= icons[i]||'fa-stethoscope' %>"></i></div>
+          <h5 class="fw-700"><%= d.dept_name %></h5>
+          <span class="badge bg-primary mb-2"><%= d.dept_code %></span>
+          <p class="text-muted small"><%= d.description || 'Comprehensive ' + d.dept_name + ' services with expert specialists.' %></p>
+          <div class="d-flex gap-3 text-muted small"><span><i class="fas fa-map-marker-alt me-1"></i>Floor <%= d.floor_number %></span><span><i class="fas fa-door-open me-1"></i><%= d.room_count %> rooms</span></div>
+          <a href="/patient/book-appointment" class="btn btn-outline-primary btn-sm w-100 mt-3">Book Appointment</a>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <div class="row g-4 bg-light p-4 rounded-3">
+      <h3 class="fw-700 text-center mb-4">Additional Services</h3>
+      <% [['fa-flask','Pathology Lab','Advanced diagnostic testing with quick turnaround'],['fa-x-ray','Radiology','MRI, CT Scan, X-Ray and Ultrasound imaging'],['fa-pills','Pharmacy','24/7 in-house pharmacy with all medicines'],['fa-ambulance','Emergency','Round-the-clock emergency and trauma care'],['fa-bed','In-Patient','Comfortable wards with dedicated nursing care'],['fa-video','Teleconsultation','Online consultations from the comfort of your home']].forEach(s=>{ %>
+      <div class="col-md-4"><div class="feature-item"><div class="fi-icon"><i class="fas <%= s[0] %>"></i></div><div><h6><%= s[1] %></h6><p class="text-muted small mb-0"><%= s[2] %></p></div></div></div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body></html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-doctor', {activePage:'profile'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>My Profile</h4><p>View your professional profile</p></div>
+  </div>
+  <div class="p-4">
+    <%- include('../partials/flash') %>
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="page-card">
+          <div class="page-card-body text-center">
+            <div class="doc-avatar mx-auto mb-3" style="width:80px;height:80px;font-size:1.8rem"><%= doctor.first_name[0] %><%= doctor.last_name[0] %></div>
+            <h5 class="fw-700">Dr. <%= doctor.first_name %> <%= doctor.last_name %></h5>
+            <p class="text-primary fw-600 mb-1"><%= doctor.specialization %></p>
+            <p class="text-muted small mb-3"><%= doctor.dept_name || 'No Department' %></p>
+            <div class="d-flex justify-content-center gap-3 mb-3">
+              <div class="text-center"><div class="fw-700 text-warning"><i class="fas fa-star"></i> <%= parseFloat(doctor.rating||0).toFixed(1) %></div><div class="text-muted" style="font-size:11px">Rating</div></div>
+              <div class="text-center"><div class="fw-700 text-primary"><%= doctor.total_reviews %></div><div class="text-muted" style="font-size:11px">Reviews</div></div>
+              <div class="text-center"><div class="fw-700"><%= doctor.experience_years %>y</div><div class="text-muted" style="font-size:11px">Exp</div></div>
+            </div>
+            <hr>
+            <div class="text-start">
+              <div class="info-item mb-2"><label>Doctor Code</label><code><%= doctor.doctor_code %></code></div>
+              <div class="info-item mb-2"><label>License No.</label><span class="small"><%= doctor.license_number || '—' %></span></div>
+              <div class="info-item mb-2"><label>Email</label><span class="small"><%= doctor.email %></span></div>
+              <div class="info-item mb-2"><label>Phone</label><span><%= doctor.phone || '—' %></span></div>
+              <div class="info-item mb-2"><label>Consultation Fee</label><span class="text-primary fw-600">₹<%= doctor.consultation_fee %></span></div>
+              <div class="info-item"><label>Follow-up Fee</label><span class="text-success fw-600">₹<%= doctor.follow_up_fee %></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="page-card">
+          <div class="page-card-header"><h5 class="mb-0">Professional Details</h5></div>
+          <div class="page-card-body">
+            <div class="info-item mb-3"><label>Qualification</label><span><%= doctor.qualification || '—' %></span></div>
+            <div class="info-item mb-3"><label>Available Days</label><span><%= doctor.available_days || '—' %></span></div>
+            <div class="info-item mb-3"><label>Slot Duration</label><span><%= doctor.slot_duration %> minutes per patient</span></div>
+            <div class="info-item mb-3"><label>Max Patients/Day</label><span><%= doctor.max_patients_per_day %></span></div>
+            <div class="info-item"><label>Biography</label><p class="text-muted"><%= doctor.bio || 'No bio added yet.' %></p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body></html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-admin', {activePage:'departments'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>Departments</h4><p><%= depts.length %> departments configured</p></div>
+    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addDeptModal"><i class="fas fa-plus me-1"></i>Add Department</button>
+  </div>
+  <div class="p-4">
+    <%- include('../partials/flash') %>
+    <div class="row g-4">
+      <% const icons=['fa-heart','fa-brain','fa-bone','fa-baby','fa-female','fa-allergies','fa-eye','fa-ear','fa-ribbon','fa-head-side-brain','fa-stomach','fa-lungs','fa-syringe','fa-kidneys','fa-ambulance']; %>
+      <% depts.forEach((d,i) => { %>
+      <div class="col-lg-4 col-md-6">
+        <div class="page-card h-100">
+          <div class="page-card-body">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <div class="dept-icon" style="flex-shrink:0"><i class="fas <%= icons[i]||'fa-stethoscope' %>"></i></div>
+              <div>
+                <h6 class="fw-700 mb-0"><%= d.dept_name %></h6>
+                <span class="badge bg-primary"><%= d.dept_code %></span>
+              </div>
+              <span class="badge ms-auto <%= d.is_active?'bg-success':'bg-secondary' %>"><%= d.is_active?'Active':'Inactive' %></span>
+            </div>
+            <p class="small text-muted mb-3"><%= d.description %></p>
+            <div class="row text-center g-2">
+              <div class="col-4"><div class="small text-muted">Doctors</div><div class="fw-700 text-primary"><%= d.doctor_count %></div></div>
+              <div class="col-4"><div class="small text-muted">This Month</div><div class="fw-700 text-success"><%= d.monthly_appointments %></div></div>
+              <div class="col-4"><div class="small text-muted">Floor</div><div class="fw-700"><%= d.floor_number %></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+<!-- Add Dept Modal -->
+<div class="modal fade" id="addDeptModal" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <form action="/admin/departments/add" method="POST">
+      <div class="modal-header"><h5 class="modal-title">Add Department</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="mb-3"><label class="form-label">Department Name *</label><input type="text" name="dept_name" class="form-control" required></div>
+        <div class="mb-3"><label class="form-label">Code *</label><input type="text" name="dept_code" class="form-control" placeholder="e.g. CARD" required></div>
+        <div class="mb-3"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="2"></textarea></div>
+        <div class="mb-3"><label class="form-label">Floor Number</label><input type="number" name="floor_number" class="form-control" value="1"></div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Add Department</button></div>
+    </form>
+  </div></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body></html>

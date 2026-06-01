@@ -1,0 +1,100 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-admin', {activePage:'patients'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>Patient Profile</h4><p><%= patient.first_name %> <%= patient.last_name %> · <%= patient.patient_code %></p></div>
+    <a href="/admin/patients" class="btn btn-sm btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back</a>
+  </div>
+  <div class="p-4">
+    <%- include('../partials/flash') %>
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="page-card">
+          <div class="page-card-body text-center">
+            <div class="doc-avatar mx-auto mb-3" style="width:80px;height:80px;font-size:1.8rem"><%= patient.first_name[0] %><%= patient.last_name[0] %></div>
+            <h5 class="fw-700"><%= patient.first_name %> <%= patient.last_name %></h5>
+            <p class="text-muted small mb-2"><%= patient.patient_code %></p>
+            <% if(patient.blood_group){ %><span class="badge bg-danger me-1"><%= patient.blood_group %></span><% } %>
+            <span class="badge bg-<%= patient.gender==='Male'?'primary':'pink' %>"><%= patient.gender %></span>
+            <hr>
+            <div class="info-grid text-start">
+              <div class="info-item"><label>Email</label><span class="small"><%= patient.email %></span></div>
+              <div class="info-item"><label>Phone</label><span><%= patient.phone || '—' %></span></div>
+              <div class="info-item"><label>Date of Birth</label><span><%= patient.date_of_birth ? new Date(patient.date_of_birth).toLocaleDateString('en-IN') : '—' %></span></div>
+              <div class="info-item"><label>City</label><span><%= patient.city || '—' %></span></div>
+              <div class="info-item"><label>Insurance</label><span class="small"><%= patient.insurance_provider || 'None' %></span></div>
+              <div class="info-item"><label>Allergies</label><span class="small text-danger"><%= patient.known_allergies || 'None known' %></span></div>
+              <div class="info-item"><label>Conditions</label><span class="small"><%= patient.chronic_conditions || 'None' %></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <ul class="nav nav-tabs mb-3" id="patTab">
+          <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#appts">Appointments (<%= appointments.length %>)</a></li>
+          <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#recs">Medical Records (<%= records.length %>)</a></li>
+          <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#bils">Bills (<%= bills.length %>)</a></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="appts">
+            <div class="page-card">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-light"><tr><th>Code</th><th>Doctor</th><th>Date & Time</th><th>Type</th><th>Status</th><th>Fee</th></tr></thead>
+                  <tbody>
+                    <% appointments.forEach(a => { %>
+                    <tr><td><code><%= a.appointment_code %></code></td><td><small>Dr. <%= a.doctor_name %><br><span class="text-muted" style="font-size:11px"><%= a.specialization %></span></small></td>
+                    <td><small><%= new Date(a.appointment_date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) %> <br><%= a.appointment_time %></small></td>
+                    <td><span class="badge bg-light text-dark"><%= a.appointment_type %></span></td>
+                    <td><span class="badge status-<%= a.status.toLowerCase().replace(/[\s-]/g,'') %>"><%= a.status %></span></td>
+                    <td>₹<%= a.consultation_fee %></td></tr>
+                    <% }) %>
+                    <% if(!appointments.length){ %><tr><td colspan="6" class="text-center text-muted py-4">No appointments yet</td></tr><% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="recs">
+            <% records.forEach(r => { %>
+            <div class="record-card">
+              <div class="d-flex justify-content-between mb-2">
+                <strong><%= new Date(r.visit_date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) %></strong>
+                <span class="text-muted small">Dr. <%= r.doctor_name %></span>
+              </div>
+              <div class="row g-2">
+                <div class="col-md-6"><label class="info-item"><label>Diagnosis</label><span><%= r.diagnosis || '—' %></span></label></div>
+                <div class="col-md-6"><label class="info-item"><label>Treatment</label><span><%= r.treatment_plan ? r.treatment_plan.substring(0,80)+'…' : '—' %></span></label></div>
+              </div>
+            </div>
+            <% }) %>
+            <% if(!records.length){ %><div class="text-center text-muted py-5"><i class="fas fa-file-medical fa-2x mb-2 d-block"></i>No medical records yet</div><% } %>
+          </div>
+          <div class="tab-pane fade" id="bils">
+            <div class="page-card"><div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light"><tr><th>Bill No.</th><th>Date</th><th>Total</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead>
+                <tbody>
+                  <% bills.forEach(b => { %>
+                  <tr><td><code><%= b.bill_number %></code></td>
+                  <td><small><%= new Date(b.bill_date).toLocaleDateString('en-IN') %></small></td>
+                  <td>₹<%= parseFloat(b.total_amount).toLocaleString() %></td>
+                  <td class="text-success">₹<%= parseFloat(b.paid_amount).toLocaleString() %></td>
+                  <td class="text-danger">₹<%= parseFloat(b.balance_amount).toLocaleString() %></td>
+                  <td><span class="badge status-<%= b.payment_status.toLowerCase() %>"><%= b.payment_status %></span></td></tr>
+                  <% }) %>
+                  <% if(!bills.length){ %><tr><td colspan="6" class="text-center text-muted py-4">No bills yet</td></tr><% } %>
+                </tbody>
+              </table>
+            </div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body></html>

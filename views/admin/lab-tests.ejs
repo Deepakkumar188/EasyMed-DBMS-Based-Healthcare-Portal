@@ -1,0 +1,38 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-admin', {activePage:'lab'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>Lab Tests</h4><p>Track all laboratory investigations</p></div>
+  </div>
+  <div class="p-4">
+    <%- include('../partials/flash') %>
+    <div class="page-card">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light"><tr><th>Test Code</th><th>Patient</th><th>Doctor</th><th>Test</th><th>Category</th><th>Ordered</th><th>Urgency</th><th>Status</th><th>Cost</th></tr></thead>
+          <tbody>
+            <% tests.forEach(t => { %>
+            <tr>
+              <td><code><%= t.test_code %></code></td>
+              <td><div class="d-flex align-items-center gap-2"><div class="mini-avatar"><%= t.patient_name[0] %></div><span class="small fw-600"><%= t.patient_name %></span></div></td>
+              <td><small>Dr. <%= t.doctor_name %></small></td>
+              <td><div class="small"><strong><%= t.test_name %></strong></div></td>
+              <td><span class="badge bg-light text-dark"><%= t.test_category %></span></td>
+              <td><small><%= new Date(t.ordered_date).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) %></small></td>
+              <td><span class="badge <%= t.urgency==='STAT'?'bg-danger':t.urgency==='Urgent'?'bg-warning text-dark':'bg-success' %>"><%= t.urgency %></span></td>
+              <td><span class="badge status-<%= t.status.toLowerCase().replace(' ','') %>"><%= t.status %></span></td>
+              <td><%= t.cost ? '₹'+t.cost : '—' %></td>
+            </tr>
+            <% }) %>
+            <% if(!tests.length){ %><tr><td colspan="9" class="text-center text-muted py-5"><i class="fas fa-flask fa-2x mb-2 d-block"></i>No lab tests found</td></tr><% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body></html>

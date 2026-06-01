@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('partials/head') %></head>
+<body>
+<%- include('partials/navbar') %>
+
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-bg"></div>
+  <div class="container position-relative">
+    <div class="row align-items-center min-vh-85">
+      <div class="col-lg-6">
+        <div class="hero-badge mb-3"><i class="fas fa-shield-alt me-2"></i>Trusted by 50,000+ Patients</div>
+        <h1 class="hero-title">Your Health,<br>Our <span class="text-accent">Priority</span></h1>
+        <p class="hero-subtitle">EasyMed connects you with the best healthcare professionals. Book appointments, manage records, and take control of your health journey — all in one place.</p>
+        <div class="d-flex gap-3 flex-wrap mt-4">
+          <a href="/auth/register" class="btn btn-primary btn-lg px-4">Get Started Free</a>
+          <a href="/doctors" class="btn btn-outline-light btn-lg px-4">Find a Doctor</a>
+        </div>
+        <div class="hero-stats mt-5">
+          <div class="stat-item"><div class="stat-number">500+</div><div class="stat-label">Specialists</div></div>
+          <div class="stat-item"><div class="stat-number">50K+</div><div class="stat-label">Patients</div></div>
+          <div class="stat-item"><div class="stat-number">15+</div><div class="stat-label">Departments</div></div>
+          <div class="stat-item"><div class="stat-number">24/7</div><div class="stat-label">Support</div></div>
+        </div>
+      </div>
+      <div class="col-lg-6 d-none d-lg-flex justify-content-end">
+        <div class="hero-card-group">
+          <div class="floating-card card-1"><i class="fas fa-calendar-check text-success"></i><div><strong>Appointment Booked!</strong><small>Dr. Sharma - 2:30 PM</small></div></div>
+          <div class="floating-card card-2"><i class="fas fa-file-medical text-primary"></i><div><strong>Record Updated</strong><small>Lab results available</small></div></div>
+          <div class="floating-card card-3"><i class="fas fa-star text-warning"></i><div><strong>4.9 Rating</strong><small>Patient satisfaction</small></div></div>
+          <div class="hero-circle"><i class="fas fa-heartbeat"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Quick Actions -->
+<section class="quick-actions py-5 bg-white">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-3"><a href="/auth/register" class="quick-card"><div class="qc-icon bg-primary-soft"><i class="fas fa-user-plus text-primary"></i></div><h5>Register as Patient</h5><p>Create your health profile</p></a></div>
+      <div class="col-md-3"><a href="/patient/book-appointment" class="quick-card"><div class="qc-icon bg-success-soft"><i class="fas fa-calendar-plus text-success"></i></div><h5>Book Appointment</h5><p>Schedule a consultation</p></a></div>
+      <div class="col-md-3"><a href="/doctors" class="quick-card"><div class="qc-icon bg-info-soft"><i class="fas fa-user-md text-info"></i></div><h5>Find Doctors</h5><p>Browse our specialists</p></a></div>
+      <div class="col-md-3"><a href="/services" class="quick-card"><div class="qc-icon bg-warning-soft"><i class="fas fa-hospital text-warning"></i></div><h5>Our Services</h5><p>Explore medical services</p></a></div>
+    </div>
+  </div>
+</section>
+
+<!-- Departments -->
+<section class="depts-section py-5">
+  <div class="container">
+    <div class="section-header text-center mb-5">
+      <span class="section-tag">Medical Departments</span>
+      <h2 class="section-title">World-Class Medical Services</h2>
+      <p class="section-sub">Specialized care across all major medical disciplines</p>
+    </div>
+    <div class="row g-3">
+      <% depts.forEach((d, i) => { const icons = ['fa-heart','fa-brain','fa-bone','fa-baby','fa-female','fa-allergies','fa-eye','fa-ear','fa-ribbon','fa-head-side-brain','fa-stomach','fa-lungs','fa-syringe','fa-kidneys','fa-ambulance']; const colors=['primary','danger','info','success','pink','warning','teal','purple','rose','blue','orange','sky','violet','amber','red']; %>
+      <div class="col-md-3 col-6">
+        <a href="/services" class="dept-card">
+          <div class="dept-icon"><i class="fas <%= icons[i]||'fa-stethoscope' %>"></i></div>
+          <h6><%= d.dept_name %></h6>
+          <small><%= d.dept_code %></small>
+        </a>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Doctors -->
+<section class="doctors-section py-5 bg-white">
+  <div class="container">
+    <div class="section-header text-center mb-5">
+      <span class="section-tag">Our Team</span>
+      <h2 class="section-title">Expert Healthcare Professionals</h2>
+      <p class="section-sub">Our doctors combine world-class expertise with compassionate care</p>
+    </div>
+    <div class="row g-4">
+      <% doctors.forEach(doc => { %>
+      <div class="col-lg-4 col-md-6">
+        <div class="doctor-card">
+          <div class="doc-avatar"><%= doc.full_name.split(' ').map(n=>n[0]).join('') %></div>
+          <h5>Dr. <%= doc.full_name %></h5>
+          <p class="doc-spec"><%= doc.specialization %></p>
+          <p class="doc-dept text-muted"><small><i class="fas fa-hospital me-1"></i><%= doc.dept_name %></small></p>
+          <div class="doc-meta">
+            <span><i class="fas fa-clock me-1"></i><%= doc.experience_years %> yrs</span>
+            <span><i class="fas fa-star me-1 text-warning"></i><%= parseFloat(doc.rating||4.5).toFixed(1) %></span>
+            <span>₹<%= doc.consultation_fee %></span>
+          </div>
+          <a href="/patient/book-appointment" class="btn btn-outline-primary btn-sm w-100 mt-3">Book Appointment</a>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <div class="text-center mt-4"><a href="/doctors" class="btn btn-primary px-5">View All Doctors</a></div>
+  </div>
+</section>
+
+<!-- Why EasyMed -->
+<section class="why-section py-5">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <span class="section-tag">Why Choose Us</span>
+        <h2 class="section-title mt-2">Healthcare That Puts You First</h2>
+        <div class="feature-list mt-4">
+          <div class="feature-item"><div class="fi-icon"><i class="fas fa-shield-alt"></i></div><div><h6>Secure & Private</h6><p>Your health data is encrypted and protected at all times.</p></div></div>
+          <div class="feature-item"><div class="fi-icon"><i class="fas fa-bolt"></i></div><div><h6>Instant Booking</h6><p>Book appointments in under 2 minutes, anytime, anywhere.</p></div></div>
+          <div class="feature-item"><div class="fi-icon"><i class="fas fa-file-medical-alt"></i></div><div><h6>Digital Records</h6><p>Access your complete medical history from any device.</p></div></div>
+          <div class="feature-item"><div class="fi-icon"><i class="fas fa-headset"></i></div><div><h6>24/7 Support</h6><p>Our support team is always here when you need help.</p></div></div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="stats-grid">
+          <div class="stat-card bg-primary text-white"><h2>98%</h2><p>Patient Satisfaction</p></div>
+          <div class="stat-card bg-white"><h2 class="text-primary">500+</h2><p>Specialist Doctors</p></div>
+          <div class="stat-card bg-white"><h2 class="text-success">50K+</h2><p>Patients Served</p></div>
+          <div class="stat-card bg-success text-white"><h2>15+</h2><p>Departments</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section py-5">
+  <div class="container text-center text-white">
+    <h2 class="fw-bold mb-3">Ready to Take Charge of Your Health?</h2>
+    <p class="mb-4 opacity-75">Join thousands of patients who trust EasyMed for their healthcare needs.</p>
+    <a href="/auth/register" class="btn btn-light btn-lg px-5 me-3">Register Now</a>
+    <a href="/auth/login" class="btn btn-outline-light btn-lg px-5">Login</a>
+  </div>
+</section>
+
+
+<footer class="footer py-4">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="footer-brand"><i class="fas fa-heartbeat"></i> EasyMed</div>
+        <p class="text-muted mt-2 small">A comprehensive healthcare portal connecting patients with the best medical professionals across India.</p>
+      </div>
+      <div class="col-lg-2 col-6"><h6>Services</h6><ul class="footer-links"><li><a href="#">OPD</a></li><li><a href="#">Lab Tests</a></li><li><a href="#">Pharmacy</a></li><li><a href="#">Emergency</a></li></ul></div>
+      <div class="col-lg-2 col-6"><h6>Company</h6><ul class="footer-links"><li><a href="/about">About</a></li><li><a href="/doctors">Doctors</a></li><li><a href="/contact">Contact</a></li></ul></div>
+      <div class="col-lg-4"><h6>Contact</h6><p class="text-muted small"><i class="fas fa-map-marker-alt me-2"></i>123 Medical Hub, Tech City, India</p><p class="text-muted small"><i class="fas fa-phone me-2"></i>+91-22-12345678</p><p class="text-muted small"><i class="fas fa-envelope me-2"></i>info@easymed.com</p></div>
+    </div>
+    <hr class="mt-3">
+    <p class="text-center text-muted small mb-0">© 2024 EasyMed Technologies Pvt. Ltd. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>

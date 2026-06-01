@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('../partials/head') %></head>
+<body class="auth-body">
+<div class="auth-container">
+  <div class="auth-left d-none d-lg-flex">
+    <div class="auth-left-content">
+      <div class="auth-brand"><i class="fas fa-heartbeat"></i> EasyMed</div>
+      <h2>Join EasyMed Today</h2>
+      <p>Create your patient profile and enjoy seamless healthcare management.</p>
+      <div class="auth-features">
+        <div class="af-item"><i class="fas fa-user-shield"></i> Secure patient profile</div>
+        <div class="af-item"><i class="fas fa-calendar-alt"></i> Easy appointment booking</div>
+        <div class="af-item"><i class="fas fa-history"></i> Complete health history</div>
+        <div class="af-item"><i class="fas fa-bell"></i> Health reminders</div>
+      </div>
+    </div>
+  </div>
+  <div class="auth-right" style="overflow-y:auto">
+    <div class="auth-form-wrap">
+      <div class="auth-form-header">
+        <a href="/" class="auth-brand-sm"><i class="fas fa-heartbeat"></i> EasyMed</a>
+        <h3>Patient Registration</h3>
+        <p>Fill in your details to create your health profile</p>
+      </div>
+      <% if (errors && errors.length) { %><div class="alert alert-danger"><ul class="mb-0 ps-3"><% errors.forEach(e=>{ %><li><%= e.msg %></li><% }) %></ul></div><% } %>
+      <form action="/auth/register" method="POST">
+        <div class="form-section-title">Personal Information</div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">First Name *</label>
+            <input type="text" name="first_name" class="form-control" value="<%= formData.first_name||'' %>" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Last Name *</label>
+            <input type="text" name="last_name" class="form-control" value="<%= formData.last_name||'' %>" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Email *</label>
+            <input type="email" name="email" class="form-control" value="<%= formData.email||'' %>" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Phone *</label>
+            <input type="tel" name="phone" class="form-control" value="<%= formData.phone||'' %>" placeholder="10-digit mobile" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Date of Birth *</label>
+            <input type="date" name="date_of_birth" class="form-control" value="<%= formData.date_of_birth||'' %>" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Gender *</label>
+            <select name="gender" class="form-select" required>
+              <option value="">Select</option>
+              <option value="Male" <%= formData.gender==='Male'?'selected':'' %>>Male</option>
+              <option value="Female" <%= formData.gender==='Female'?'selected':'' %>>Female</option>
+              <option value="Other" <%= formData.gender==='Other'?'selected':'' %>>Other</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Blood Group</label>
+            <select name="blood_group" class="form-select">
+              <option value="">Unknown</option>
+              <% ['A+','A-','B+','B-','AB+','AB-','O+','O-'].forEach(bg=>{ %><option value="<%= bg %>" <%= formData.blood_group===bg?'selected':'' %>><%= bg %></option><% }) %>
+            </select>
+          </div>
+        </div>
+        <div class="form-section-title mt-4">Address</div>
+        <div class="row g-3">
+          <div class="col-12"><input type="text" name="address" class="form-control" placeholder="Address" value="<%= formData.address||'' %>"></div>
+          <div class="col-md-4"><input type="text" name="city" class="form-control" placeholder="City" value="<%= formData.city||'' %>"></div>
+          <div class="col-md-4"><input type="text" name="state" class="form-control" placeholder="State" value="<%= formData.state||'' %>"></div>
+          <div class="col-md-4"><input type="text" name="pincode" class="form-control" placeholder="Pincode" value="<%= formData.pincode||'' %>"></div>
+        </div>
+        <div class="form-section-title mt-4">Emergency Contact</div>
+        <div class="row g-3">
+          <div class="col-md-4"><input type="text" name="emergency_name" class="form-control" placeholder="Contact Name" value="<%= formData.emergency_name||'' %>"></div>
+          <div class="col-md-4"><input type="tel" name="emergency_phone" class="form-control" placeholder="Contact Phone" value="<%= formData.emergency_phone||'' %>"></div>
+          <div class="col-md-4"><input type="text" name="emergency_relation" class="form-control" placeholder="Relation" value="<%= formData.emergency_relation||'' %>"></div>
+        </div>
+        <div class="form-section-title mt-4">Account Security</div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Password *</label>
+            <div class="input-group">
+              <input type="password" name="password" id="reg_pass" class="form-control" placeholder="Min 8 chars with uppercase & number" required>
+              <button type="button" class="btn btn-outline-secondary" onclick="togglePass('reg_pass',this)"><i class="fas fa-eye"></i></button>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Confirm Password *</label>
+            <input type="password" name="confirm_password" class="form-control" placeholder="Repeat password" required>
+          </div>
+        </div>
+        <div class="mt-4">
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="terms" required>
+            <label class="form-check-label" for="terms">I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a></label>
+          </div>
+          <button type="submit" class="btn btn-primary w-100 btn-lg">Create Account <i class="fas fa-user-plus ms-2"></i></button>
+        </div>
+      </form>
+      <p class="text-center mt-3 text-muted">Already registered? <a href="/auth/login" class="text-primary fw-semibold">Sign In</a></p>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>function togglePass(id,btn){const f=document.getElementById(id);f.type=f.type==='password'?'text':'password';btn.innerHTML=f.type==='password'?'<i class="fas fa-eye"></i>':'<i class="fas fa-eye-slash"></i>';}</script>
+</body></html>

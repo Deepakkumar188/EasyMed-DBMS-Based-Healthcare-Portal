@@ -1,0 +1,39 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-admin', {activePage:'doctors'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>Doctor Management</h4><p><%= doctors.length %> doctors registered</p></div>
+    <a href="/admin/doctors/add" class="btn btn-primary btn-sm"><i class="fas fa-user-plus me-1"></i>Add Doctor</a>
+  </div>
+  <div class="p-4">
+    <%- include('../partials/flash') %>
+    <div class="row g-4">
+      <% doctors.forEach(d => { %>
+      <div class="col-lg-4 col-md-6">
+        <div class="doctor-card">
+          <div class="doc-avatar"><%= d.first_name[0] %><%= d.last_name[0] %></div>
+          <h5 class="fw-700">Dr. <%= d.first_name %> <%= d.last_name %></h5>
+          <p class="doc-spec"><%= d.specialization %></p>
+          <p class="small text-muted"><i class="fas fa-hospital me-1"></i><%= d.dept_name || 'No Department' %></p>
+          <p class="small text-muted mb-0"><i class="fas fa-id-card me-1"></i><%= d.doctor_code %></p>
+          <hr class="my-2">
+          <div class="row text-center g-1 mb-3">
+            <div class="col-4"><div class="small text-muted">Experience</div><div class="fw-600 small"><%= d.experience_years %>y</div></div>
+            <div class="col-4"><div class="small text-muted">Fee</div><div class="fw-600 small">₹<%= d.consultation_fee %></div></div>
+            <div class="col-4"><div class="small text-muted">Status</div><span class="badge <%= d.is_available?'bg-success':'bg-secondary' %>"><%= d.is_available?'Active':'Off' %></span></div>
+          </div>
+          <div class="d-flex gap-2">
+            <span class="badge bg-light text-dark flex-grow-1 py-2"><i class="fas fa-envelope me-1"></i><small><%= d.email %></small></span>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+      <% if(!doctors.length){ %><div class="col-12 text-center text-muted py-5"><i class="fas fa-user-md fa-3x mb-3 d-block opacity-25"></i><p>No doctors registered yet.</p><a href="/admin/doctors/add" class="btn btn-primary">Add First Doctor</a></div><% } %>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body></html>

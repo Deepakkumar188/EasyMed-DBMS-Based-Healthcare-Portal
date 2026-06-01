@@ -1,0 +1,43 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-doctor', {activePage:'patients'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>My Patients</h4><p><%= patients.length %> patients seen</p></div>
+  </div>
+  <div class="p-4">
+    <%- include('../partials/flash') %>
+    <div class="page-card">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light"><tr><th>Patient</th><th>Code</th><th>Contact</th><th>Blood</th><th>City</th><th>Last Visit</th></tr></thead>
+          <tbody>
+            <% patients.forEach(p => { %>
+            <tr>
+              <td><div class="d-flex align-items-center gap-2">
+                <div class="mini-avatar"><%= p.first_name[0] %></div>
+                <div><div class="fw-600 small"><%= p.first_name %> <%= p.last_name %></div>
+                <div class="text-muted" style="font-size:11px"><%= p.email %></div></div>
+              </div></td>
+              <td><code><%= p.patient_code %></code></td>
+              <td><span class="small"><%= p.phone || '—' %></span></td>
+              <td><% if(p.blood_group){ %><span class="badge bg-danger"><%= p.blood_group %></span><% } else { %>—<% } %></td>
+              <td><span class="small"><%= p.city || '—' %></span></td>
+              <td><span class="small"><%= p.last_visit ? new Date(p.last_visit).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—' %></span></td>
+            </tr>
+            <% }) %>
+            <% if(!patients.length){ %>
+            <tr><td colspan="6" class="text-center text-muted py-5">
+              <i class="fas fa-users fa-2x mb-2 d-block opacity-25"></i>No patients yet
+            </td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body></html>

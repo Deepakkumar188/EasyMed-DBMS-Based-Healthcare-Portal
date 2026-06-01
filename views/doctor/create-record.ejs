@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-doctor', {activePage:'appointments'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>Create Medical Record</h4><p>Appointment: <%= appt.appointment_code %></p></div>
+    <a href="/doctor/appointments" class="btn btn-sm btn-outline-secondary"><i class="fas fa-arrow-left me-1"></i>Back</a>
+  </div>
+  <div class="p-4">
+    <%- include('../partials/flash') %>
+    <div class="row g-4">
+      <!-- Patient Info -->
+      <div class="col-lg-4">
+        <div class="page-card mb-3">
+          <div class="page-card-header"><h5 class="mb-0">Patient Info</h5></div>
+          <div class="page-card-body">
+            <div class="text-center mb-3"><div class="doc-avatar mx-auto mb-2"><%= appt.patient_name[0] %></div><h6 class="fw-700"><%= appt.patient_name %></h6><p class="text-muted small"><%= appt.patient_code %></p></div>
+            <div class="info-item mb-2"><label>Blood Group</label><span class="badge bg-danger"><%= appt.blood_group||'Unknown' %></span></div>
+            <div class="info-item mb-2"><label>Appointment Type</label><span><%= appt.appointment_type %></span></div>
+            <div class="info-item mb-2"><label>Reason</label><span class="small"><%= appt.reason_for_visit||'—' %></span></div>
+            <div class="info-item"><label>Patient Symptoms</label><span class="small"><%= appt.symptoms||'None reported' %></span></div>
+          </div>
+        </div>
+        <% if(prevRecords.length){ %>
+        <div class="page-card">
+          <div class="page-card-header"><h5 class="mb-0">Previous Visits</h5></div>
+          <div class="page-card-body p-0">
+            <% prevRecords.forEach(r=>{ %>
+            <div class="patient-list-item">
+              <div class="flex-grow-1"><div class="small fw-600"><%= new Date(r.visit_date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) %></div><div class="text-muted" style="font-size:11px"><%= r.diagnosis ? r.diagnosis.substring(0,40)+'…' : 'No diagnosis' %></div></div>
+            </div>
+            <% }) %>
+          </div>
+        </div>
+        <% } %>
+      </div>
+      <!-- Record Form -->
+      <div class="col-lg-8">
+        <div class="page-card">
+          <div class="page-card-header"><h5 class="mb-0">Clinical Notes</h5></div>
+          <div class="page-card-body">
+            <form action="/doctor/appointments/<%= appt.appointment_id %>/record" method="POST">
+              <div class="form-section-title">Vital Signs</div>
+              <div class="row g-3 mt-1">
+                <div class="col-md-3"><label class="form-label">BP (mmHg)</label><input type="text" name="bp" class="form-control" placeholder="120/80"></div>
+                <div class="col-md-3"><label class="form-label">Pulse (/min)</label><input type="number" name="pulse" class="form-control" placeholder="72"></div>
+                <div class="col-md-2"><label class="form-label">Temp (°F)</label><input type="number" name="temperature" class="form-control" step="0.1" placeholder="98.6"></div>
+                <div class="col-md-2"><label class="form-label">SpO2 (%)</label><input type="number" name="spo2" class="form-control" placeholder="98"></div>
+                <div class="col-md-1"><label class="form-label">Wt (kg)</label><input type="number" name="weight" class="form-control"></div>
+                <div class="col-md-1"><label class="form-label">Ht (cm)</label><input type="number" name="height" class="form-control"></div>
+              </div>
+              <div class="form-section-title mt-4">Clinical Assessment</div>
+              <div class="row g-3 mt-1">
+                <div class="col-12"><label class="form-label">Chief Complaint *</label><input type="text" name="chief_complaint" class="form-control" placeholder="Main presenting complaint…" required></div>
+                <div class="col-md-6"><label class="form-label">History of Present Illness</label><textarea name="history" class="form-control" rows="3" placeholder="HPI details…"></textarea></div>
+                <div class="col-md-6"><label class="form-label">Physical Examination</label><textarea name="examination" class="form-control" rows="3" placeholder="Examination findings…"></textarea></div>
+                <div class="col-12"><label class="form-label">Diagnosis *</label><input type="text" name="diagnosis" class="form-control" placeholder="Primary diagnosis…" required></div>
+                <div class="col-md-6"><label class="form-label">Treatment Plan</label><textarea name="treatment" class="form-control" rows="3" placeholder="Treatment strategy…"></textarea></div>
+                <div class="col-md-6"><label class="form-label">Prescription Notes</label><textarea name="prescription_text" class="form-control" rows="3" placeholder="Medications prescribed…"></textarea></div>
+                <div class="col-md-6"><label class="form-label">Lab Tests Ordered</label><textarea name="lab_tests" class="form-control" rows="2" placeholder="CBC, LFT, blood sugar…"></textarea></div>
+                <div class="col-md-3"><label class="form-label">Follow-up Date</label><input type="date" name="follow_up_date" class="form-control" min="<%= new Date().toISOString().split('T')[0] %>"></div>
+                <div class="col-md-3"><label class="form-label">Doctor Notes</label><textarea name="doctor_notes" class="form-control" rows="2" placeholder="Private notes…"></textarea></div>
+              </div>
+              <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-success px-4"><i class="fas fa-save me-2"></i>Save & Complete</button>
+                <a href="/doctor/appointments" class="btn btn-outline-secondary">Cancel</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body></html>

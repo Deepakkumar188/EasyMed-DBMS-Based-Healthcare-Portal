@@ -1,0 +1,85 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-doctor', {activePage:'dashboard'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>Doctor Dashboard</h4><p>Welcome, Dr. <%= user.first_name %>!</p></div>
+    <span class="badge bg-<%= doctor.is_available?'success':'secondary' %> px-3 py-2"><i class="fas fa-circle me-1" style="font-size:8px"></i><%= doctor.is_available?'Available':'Off Duty' %></span>
+  </div>
+  <div class="p-4">
+    <%- include('../partials/flash') %>
+    <div class="row g-3 mb-4">
+      <div class="col-md-3"><div class="stat-card-dash bg-gradient-primary text-white"><div class="scd-icon"><i class="fas fa-calendar-day"></i></div><div class="scd-info"><h3><%= counts.today||0 %></h3><p>Today's Appointments</p></div></div></div>
+      <div class="col-md-3"><div class="stat-card-dash bg-gradient-success text-white"><div class="scd-icon"><i class="fas fa-calendar-check"></i></div><div class="scd-info"><h3><%= counts.monthly||0 %></h3><p>Monthly Completed</p></div></div></div>
+      <div class="col-md-3"><div class="stat-card-dash bg-white border"><div class="scd-icon text-warning"><i class="fas fa-hourglass-half"></i></div><div class="scd-info"><h3><%= counts.pending||0 %></h3><p>Pending</p></div></div></div>
+      <div class="col-md-3"><div class="stat-card-dash bg-white border"><div class="scd-icon text-info"><i class="fas fa-users"></i></div><div class="scd-info"><h3><%= counts.total||0 %></h3><p>Total Patients</p></div></div></div>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="page-card">
+          <div class="page-card-header"><h5 class="mb-0"><i class="fas fa-calendar-day text-primary me-2"></i>Today's Schedule</h5><a href="/doctor/appointments" class="btn btn-sm btn-outline-primary">Full Schedule</a></div>
+          <div class="page-card-body p-0">
+            <% if(todayAppts.length){ todayAppts.forEach(a=>{ %>
+            <div class="d-flex align-items-center gap-3 p-3 border-bottom">
+              <div class="appt-date-badge" style="min-width:52px">
+                <div class="fw-700 text-primary" style="font-size:0.95rem"><%= a.appointment_time %></div>
+              </div>
+              <div class="mini-avatar"><%= a.patient_name[0] %></div>
+              <div class="flex-grow-1">
+                <div class="fw-600 small"><%= a.patient_name %></div>
+                <div class="text-muted" style="font-size:11px"><%= a.patient_code %> · <i class="fas fa-tint me-1"></i><%= a.blood_group||'—' %></div>
+                <div class="text-muted" style="font-size:11px"><%= a.appointment_type %> · <%= a.reason_for_visit||'' %></div>
+              </div>
+              <div class="text-end">
+                <span class="badge status-<%= a.status.toLowerCase().replace(/[\s-]/g,'') %> d-block mb-1"><%= a.status %></span>
+                <% if(a.status==='Scheduled'||a.status==='Confirmed'){ %>
+                <form action="/doctor/appointments/<%= a.appointment_id %>/start" method="POST" class="d-inline">
+                  <button class="btn btn-xs btn-primary">Start</button>
+                </form>
+                <% } else if(a.status==='In-Progress'){ %>
+                <a href="/doctor/appointments/<%= a.appointment_id %>/record" class="btn btn-xs btn-success">Record</a>
+                <% } %>
+              </div>
+            </div>
+            <% }) } else { %>
+            <div class="text-center text-muted py-5"><i class="fas fa-calendar-check fa-2x mb-2 d-block opacity-25"></i>No appointments today</div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="page-card mb-3">
+          <div class="page-card-header"><h5 class="mb-0">My Profile</h5></div>
+          <div class="page-card-body text-center">
+            <div class="doc-avatar mx-auto mb-2"><%= user.first_name[0] %><%= user.last_name[0] %></div>
+            <h6 class="fw-700">Dr. <%= user.first_name %> <%= user.last_name %></h6>
+            <p class="text-primary small mb-1"><%= doctor.specialization %></p>
+            <p class="text-muted small"><%= doctor.qualification %></p>
+            <div class="d-flex justify-content-center gap-3 text-center">
+              <div><div class="fw-700 text-primary"><%= doctor.experience_years %>y</div><div class="text-muted" style="font-size:11px">Experience</div></div>
+              <div><div class="fw-700 text-warning"><i class="fas fa-star"></i> <%= parseFloat(doctor.rating||4.5).toFixed(1) %></div><div class="text-muted" style="font-size:11px">Rating</div></div>
+              <div><div class="fw-700 text-success">₹<%= doctor.consultation_fee %></div><div class="text-muted" style="font-size:11px">Fee</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="page-card">
+          <div class="page-card-header"><h5 class="mb-0">Upcoming</h5><a href="/doctor/appointments" class="btn btn-xs btn-outline-primary">All</a></div>
+          <div class="page-card-body p-0">
+            <% upcomingAppts.slice(0,5).forEach(a=>{ %>
+            <div class="patient-list-item">
+              <div class="mini-avatar"><%= a.patient_name[0] %></div>
+              <div class="flex-grow-1"><div class="small fw-600"><%= a.patient_name %></div><div class="text-muted" style="font-size:11px"><%= new Date(a.appointment_date).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) %> · <%= a.appointment_time %></div></div>
+              <span class="badge bg-light text-dark"><%= a.appointment_type %></span>
+            </div>
+            <% }) %>
+            <% if(!upcomingAppts.length){ %><div class="p-3 text-center text-muted small">No upcoming appointments</div><% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body></html>

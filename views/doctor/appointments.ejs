@@ -1,0 +1,57 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-doctor', {activePage:'appointments'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>Appointments</h4><p><%= appointments.length %> appointments on <%= new Date(date).toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}) %></p></div>
+  </div>
+  <div class="p-4">
+    <%- include('../partials/flash') %>
+    <div class="page-card mb-3">
+      <div class="page-card-body">
+        <form class="d-flex gap-2 align-items-end" method="GET">
+          <div><label class="form-label small mb-1">Select Date</label><input type="date" name="date" class="form-control form-control-sm" value="<%= date %>"></div>
+          <button class="btn btn-primary btn-sm">Load</button>
+          <a href="?date=<%= new Date().toISOString().split('T')[0] %>" class="btn btn-outline-secondary btn-sm">Today</a>
+        </form>
+      </div>
+    </div>
+    <div class="page-card">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light"><tr><th>Time</th><th>Patient</th><th>Type</th><th>Reason</th><th>Status</th><th>Payment</th><th>Actions</th></tr></thead>
+          <tbody>
+            <% appointments.forEach(a=>{ %>
+            <tr>
+              <td><span class="fw-600 text-primary"><%= a.appointment_time %></span></td>
+              <td><div class="d-flex align-items-center gap-2"><div class="mini-avatar"><%= a.patient_name[0] %></div><div><div class="fw-600 small"><%= a.patient_name %></div><div class="text-muted" style="font-size:11px"><%= a.patient_code %> · Blood: <%= a.blood_group||'—' %></div></div></div></td>
+              <td><span class="badge bg-light text-dark"><%= a.appointment_type %></span></td>
+              <td><span class="small text-muted"><%= a.reason_for_visit ? a.reason_for_visit.substring(0,40)+'…' : '—' %></span></td>
+              <td><span class="badge status-<%= a.status.toLowerCase().replace(/[\s-]/g,'') %>"><%= a.status %></span></td>
+              <td><span class="badge status-<%= a.payment_status.toLowerCase() %>"><%= a.payment_status %></span></td>
+              <td>
+                <div class="d-flex gap-1">
+                  <% if(a.status==='Scheduled'||a.status==='Confirmed'){ %>
+                  <form action="/doctor/appointments/<%= a.appointment_id %>/start" method="POST"><button type="submit" class="btn btn-xs btn-primary">Start</button></form>
+                  <% } %>
+                  <% if(a.status==='In-Progress'){ %>
+                  <a href="/doctor/appointments/<%= a.appointment_id %>/record" class="btn btn-xs btn-success">Record</a>
+                  <% } %>
+                  <% if(a.status==='Completed'){ %>
+                  <span class="text-success small"><i class="fas fa-check"></i></span>
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+            <% }) %>
+            <% if(!appointments.length){ %><tr><td colspan="7" class="text-center text-muted py-5"><i class="fas fa-calendar-times fa-2x mb-2 d-block opacity-25"></i>No appointments for this day</td></tr><% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body></html>

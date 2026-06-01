@@ -1,0 +1,55 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-admin', {activePage:'patients'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>Patient Management</h4><p>Total <%= total %> registered patients</p></div>
+    <a href="/auth/register" class="btn btn-primary btn-sm"><i class="fas fa-user-plus me-1"></i>Add Patient</a>
+  </div>
+  <div class="p-4">
+    <%- include('../partials/flash') %>
+    <div class="page-card">
+      <div class="page-card-header">
+        <h5 class="mb-0">All Patients</h5>
+        <form class="d-flex gap-2" method="GET">
+          <input type="text" name="search" class="form-control form-control-sm" placeholder="Search name, code, email…" value="<%= search %>">
+          <button class="btn btn-sm btn-outline-primary">Search</button>
+          <% if(search) { %><a href="/admin/patients" class="btn btn-sm btn-outline-secondary">Clear</a><% } %>
+        </form>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light"><tr><th>Patient</th><th>Code</th><th>Contact</th><th>Blood</th><th>City</th><th>Visits</th><th>Last Visit</th><th>Action</th></tr></thead>
+          <tbody>
+            <% patients.forEach(p => { %>
+            <tr>
+              <td><div class="d-flex align-items-center gap-2"><div class="mini-avatar"><%= p.full_name[0] %></div><div><div class="fw-600 small"><%= p.full_name %></div><div class="text-muted" style="font-size:11px"><%= p.email %></div></div></div></td>
+              <td><code><%= p.patient_code %></code></td>
+              <td><span class="small"><%= p.phone || '—' %></span></td>
+              <td><% if(p.blood_group){%><span class="badge bg-danger"><%= p.blood_group %></span><%}else{%>—<%}%></td>
+              <td><span class="small"><%= p.city || '—' %></span></td>
+              <td><span class="badge bg-light text-dark"><%= p.total_appointments || 0 %></span></td>
+              <td><span class="small"><%= p.last_visit ? new Date(p.last_visit).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : 'Never' %></span></td>
+              <td><a href="/admin/patients/<%= p.patient_id %>" class="btn btn-xs btn-outline-primary">View</a></td>
+            </tr>
+            <% }) %>
+            <% if(!patients.length){ %><tr><td colspan="8" class="text-center text-muted py-5"><i class="fas fa-users fa-2x mb-2 d-block"></i>No patients found</td></tr><% } %>
+          </tbody>
+        </table>
+      </div>
+      <% if(total > limit){ %>
+      <div class="d-flex justify-content-between align-items-center p-3 border-top">
+        <span class="small text-muted">Showing <%= (page-1)*limit+1 %>–<%= Math.min(page*limit,total) %> of <%= total %></span>
+        <div class="d-flex gap-1">
+          <% if(page>1){ %><a href="?page=<%= page-1 %>&search=<%= search %>" class="btn btn-sm btn-outline-secondary">Prev</a><% } %>
+          <% if(page*limit<total){ %><a href="?page=<%= page+1 %>&search=<%= search %>" class="btn btn-sm btn-outline-primary">Next</a><% } %>
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body></html>

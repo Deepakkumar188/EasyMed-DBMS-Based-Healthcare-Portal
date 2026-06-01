@@ -1,0 +1,60 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-admin', {activePage:'reports'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>Reports & Analytics</h4><p>Comprehensive hospital performance reports</p></div>
+  </div>
+  <div class="p-4">
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="dash-card">
+          <div class="dash-card-header"><h5>Monthly Appointment Trends</h5></div>
+          <canvas id="monthlyChart" height="120" style="padding:1rem"></canvas>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="dash-card">
+          <div class="dash-card-header"><h5>Department-wise Appointments</h5></div>
+          <canvas id="deptPieChart" style="padding:1rem"></canvas>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="page-card">
+          <div class="page-card-header"><h5 class="mb-0">Top Performing Doctors</h5></div>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light"><tr><th>#</th><th>Doctor</th><th>Specialization</th><th>Completed Appointments</th><th>Performance</th></tr></thead>
+              <tbody>
+                <% topDoctors.forEach((d,i) => { %>
+                <tr>
+                  <td><span class="badge bg-<%= i===0?'warning text-dark':i===1?'secondary':i===2?'danger':'light text-dark' %>">#<%= i+1 %></span></td>
+                  <td><div class="d-flex align-items-center gap-2"><div class="mini-avatar"><%= d.name[0] %></div><span class="fw-600 small">Dr. <%= d.name %></span></div></td>
+                  <td><span class="small"><%= d.specialization %></span></td>
+                  <td><span class="fw-700 text-primary"><%= d.appointments %></span></td>
+                  <td>
+                    <div class="progress" style="height:6px;width:120px">
+                      <div class="progress-bar bg-primary" style="width:<%= Math.min(100,(d.appointments/(topDoctors[0]?.appointments||1))*100) %>%"></div>
+                    </div>
+                  </td>
+                </tr>
+                <% }) %>
+                <% if(!topDoctors.length){ %><tr><td colspan="5" class="text-center text-muted py-4">No data yet</td></tr><% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+const md = <%- JSON.stringify(monthlyData) %>;
+const dd = <%- JSON.stringify(deptWise) %>;
+new Chart(document.getElementById('monthlyChart'),{type:'bar',data:{labels:md.map(d=>d.month),datasets:[{label:'Total',data:md.map(d=>d.total),backgroundColor:'rgba(0,102,204,0.15)',borderColor:'#0066cc',borderWidth:2,borderRadius:4},{label:'Completed',data:md.map(d=>d.completed),backgroundColor:'rgba(40,167,69,0.15)',borderColor:'#28a745',borderWidth:2,borderRadius:4}]},options:{responsive:true,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:true,grid:{color:'#f0f0f0'}},x:{grid:{display:false}}}}});
+if(dd.length){new Chart(document.getElementById('deptPieChart'),{type:'doughnut',data:{labels:dd.map(d=>d.dept_name),datasets:[{data:dd.map(d=>d.total),backgroundColor:['#0066cc','#00b894','#fd7e14','#e74c3c','#9b59b6','#f39c12','#17a2b8','#28a745'],borderWidth:2}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10}}},cutout:'60%'}});}
+</script>
+</body></html>

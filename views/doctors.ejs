@@ -1,0 +1,36 @@
+<!DOCTYPE html><html lang="en"><head><%- include('partials/head') %></head>
+<body><%- include('partials/navbar') %>
+<section class="py-5" style="background:linear-gradient(135deg,#0d1b4b,#0066cc)">
+  <div class="container text-center py-4 text-white"><h1 class="fw-bold">Our Doctors</h1><p class="opacity-75">Meet our team of expert healthcare professionals</p></div>
+</section>
+<section class="py-5">
+  <div class="container">
+    <div class="row g-4">
+      <% doctors.forEach(doc => { %>
+      <div class="col-lg-4 col-md-6">
+        <div class="doctor-card">
+          <div class="doc-avatar"><%= doc.full_name.split(' ').map(n=>n[0]).join('').substring(0,2) %></div>
+          <h5 class="fw-700">Dr. <%= doc.full_name %></h5>
+          <p class="doc-spec"><%= doc.specialization %></p>
+          <p class="text-muted small"><i class="fas fa-hospital me-1"></i><%= doc.dept_name %></p>
+          <div class="doc-meta">
+            <span><i class="fas fa-graduation-cap me-1"></i><%= doc.qualification ? doc.qualification.split(',')[0] : '—' %></span>
+            <span><i class="fas fa-clock me-1"></i><%= doc.experience_years %>y exp</span>
+          </div>
+          <hr class="my-2">
+          <div class="d-flex justify-content-between align-items-center">
+            <div><div class="small text-muted">Consultation</div><div class="fw-700 text-primary">₹<%= doc.consultation_fee %></div></div>
+            <div class="text-end"><div class="small text-muted">Rating</div><div class="fw-600"><i class="fas fa-star text-warning me-1"></i><%= parseFloat(doc.rating||4.5).toFixed(1) %> (<%= doc.total_reviews %>)</div></div>
+          </div>
+          <a href="/patient/book-appointment" class="btn btn-primary btn-sm w-100 mt-3">Book Appointment</a>
+        </div>
+      </div>
+      <% }) %>
+      <% if(!doctors.length){ %><div class="col-12 text-center text-muted py-5"><p>No doctors available right now.</p></div><% } %>
+    </div>
+  </div>
+</section>
+<%- include('partials/footer') %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body></html>

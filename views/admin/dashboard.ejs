@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-admin', { activePage: 'dashboard' }) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>Admin Dashboard</h4><p>Welcome back, <%= user.first_name %>! Here's what's happening today.</p></div>
+    <div class="top-bar-actions">
+      <span class="badge bg-light text-dark"><i class="fas fa-calendar me-1"></i><%= new Date().toDateString() %></span>
+    </div>
+  </div>
+  <div class="dashboard-content p-4">
+    <%- include('../partials/flash') %>
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+      <div class="col-lg-3 col-md-6"><div class="stat-card-dash bg-gradient-primary text-white"><div class="scd-icon"><i class="fas fa-users"></i></div><div class="scd-info"><h3><%= stats.total_patients||0 %></h3><p>Total Patients</p></div><div class="scd-trend"><i class="fas fa-arrow-up"></i> 12%</div></div></div>
+      <div class="col-lg-3 col-md-6"><div class="stat-card-dash bg-gradient-success text-white"><div class="scd-icon"><i class="fas fa-user-md"></i></div><div class="scd-info"><h3><%= stats.active_doctors||0 %></h3><p>Active Doctors</p></div><div class="scd-trend"><i class="fas fa-check"></i> Active</div></div></div>
+      <div class="col-lg-3 col-md-6"><div class="stat-card-dash bg-gradient-info text-white"><div class="scd-icon"><i class="fas fa-calendar-check"></i></div><div class="scd-info"><h3><%= stats.today_appointments||0 %></h3><p>Today's Appointments</p></div><div class="scd-trend"><i class="fas fa-calendar"></i> Today</div></div></div>
+      <div class="col-lg-3 col-md-6"><div class="stat-card-dash bg-gradient-warning text-white"><div class="scd-icon"><i class="fas fa-rupee-sign"></i></div><div class="scd-info"><h3>₹<%= (stats.monthly_revenue||0).toLocaleString() %></h3><p>Monthly Revenue</p></div><div class="scd-trend"><i class="fas fa-arrow-up"></i> 8%</div></div></div>
+    </div>
+    <div class="row g-4 mb-4">
+      <div class="col-lg-3 col-md-6"><div class="stat-card-dash bg-white border"><div class="scd-icon text-primary"><i class="fas fa-hourglass-half"></i></div><div class="scd-info"><h3><%= stats.pending_appointments||0 %></h3><p>Pending Appts</p></div></div></div>
+      <div class="col-lg-3 col-md-6"><div class="stat-card-dash bg-white border"><div class="scd-icon text-success"><i class="fas fa-calendar-check"></i></div><div class="scd-info"><h3><%= stats.monthly_completed||0 %></h3><p>Monthly Completed</p></div></div></div>
+      <div class="col-lg-3 col-md-6"><div class="stat-card-dash bg-white border"><div class="scd-icon text-info"><i class="fas fa-flask"></i></div><div class="scd-info"><h3><%= stats.pending_lab_tests||0 %></h3><p>Pending Lab Tests</p></div></div></div>
+      <div class="col-lg-3 col-md-6"><div class="stat-card-dash bg-white border"><div class="scd-icon text-warning"><i class="fas fa-user-plus"></i></div><div class="scd-info"><h3><%= stats.new_registrations_today||0 %></h3><p>New Today</p></div></div></div>
+    </div>
+    <div class="row g-4 mb-4">
+      <!-- Revenue Chart -->
+      <div class="col-lg-8">
+        <div class="dash-card">
+          <div class="dash-card-header"><h5>Revenue Overview (Last 6 months)</h5><a href="/admin/billing" class="btn btn-sm btn-outline-primary">View All</a></div>
+          <canvas id="revenueChart" height="120"></canvas>
+        </div>
+      </div>
+      <!-- Dept Distribution -->
+      <div class="col-lg-4">
+        <div class="dash-card">
+          <div class="dash-card-header"><h5>Dept. Distribution</h5></div>
+          <canvas id="deptChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="row g-4">
+      <!-- Recent Appointments -->
+      <div class="col-lg-8">
+        <div class="dash-card">
+          <div class="dash-card-header"><h5>Recent Appointments</h5><a href="/admin/appointments" class="btn btn-sm btn-outline-primary">View All</a></div>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light"><tr><th>Code</th><th>Patient</th><th>Doctor</th><th>Date</th><th>Status</th><th>Fee</th></tr></thead>
+              <tbody>
+                <% recentAppointments.forEach(a => { %>
+                <tr>
+                  <td><code><%= a.appointment_code %></code></td>
+                  <td><div class="d-flex align-items-center gap-2"><div class="mini-avatar"><%= a.patient_name[0] %></div><div><div class="fw-semibold small"><%= a.patient_name %></div><div class="text-muted" style="font-size:11px"><%= a.patient_code %></div></div></div></td>
+                  <td><span class="small">Dr. <%= a.doctor_name %></span></td>
+                  <td><span class="small"><%= new Date(a.appointment_date).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) %> <%= a.appointment_time %></span></td>
+                  <td><span class="badge status-<%= a.status.toLowerCase().replace('-','') %>"><%= a.status %></span></td>
+                  <td>₹<%= a.consultation_fee %></td>
+                </tr>
+                <% }) %>
+                <% if(!recentAppointments.length) { %><tr><td colspan="6" class="text-center text-muted py-4">No appointments yet</td></tr><% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- Recent Patients -->
+      <div class="col-lg-4">
+        <div class="dash-card">
+          <div class="dash-card-header"><h5>Recent Patients</h5><a href="/admin/patients" class="btn btn-sm btn-outline-primary">View All</a></div>
+          <% recentPatients.forEach(p => { %>
+          <div class="patient-list-item">
+            <div class="mini-avatar"><%= p.full_name[0] %></div>
+            <div class="flex-grow-1">
+              <div class="fw-semibold small"><%= p.full_name %></div>
+              <div class="text-muted" style="font-size:11px"><%= p.patient_code %> · <%= p.city %></div>
+            </div>
+            <a href="/admin/patients/<%= p.patient_id %>" class="btn btn-xs btn-outline-primary">View</a>
+          </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="/js/dashboard.js"></script>
+<script>
+const revenueData = <%- JSON.stringify(monthlyRevenue) %>;
+const deptData = <%- JSON.stringify(deptStats) %>;
+initAdminCharts(revenueData, deptData);
+</script>
+</body></html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html><html lang="en"><head><%- include('../partials/head') %></head>
+<body class="dashboard-body">
+<%- include('../partials/sidebar-patient', {activePage:'bills'}) %>
+<div class="main-content">
+  <div class="top-bar">
+    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><h4>Bills & Payments</h4><p>Track your medical expenses</p></div>
+  </div>
+  <div class="p-4">
+    <%- include('../partials/flash') %>
+    <% const totalPaid=bills.filter(b=>b.payment_status==='Paid').reduce((s,b)=>s+parseFloat(b.paid_amount||0),0);
+       const totalDue=bills.filter(b=>b.payment_status!=='Paid').reduce((s,b)=>s+parseFloat(b.balance_amount||0),0); %>
+    <div class="row g-3 mb-4">
+      <div class="col-md-4"><div class="stat-card-dash bg-gradient-success text-white"><div class="scd-icon"><i class="fas fa-check-circle"></i></div><div class="scd-info"><h3>₹<%= totalPaid.toLocaleString() %></h3><p>Total Paid</p></div></div></div>
+      <div class="col-md-4"><div class="stat-card-dash bg-gradient-warning text-white"><div class="scd-icon"><i class="fas fa-exclamation-circle"></i></div><div class="scd-info"><h3>₹<%= totalDue.toLocaleString() %></h3><p>Outstanding Dues</p></div></div></div>
+      <div class="col-md-4"><div class="stat-card-dash bg-white border"><div class="scd-icon text-primary"><i class="fas fa-file-invoice"></i></div><div class="scd-info"><h3><%= bills.length %></h3><p>Total Bills</p></div></div></div>
+    </div>
+    <% bills.forEach(b=>{ %>
+    <div class="page-card mb-3">
+      <div class="page-card-header">
+        <div>
+          <div class="fw-700"><code><%= b.bill_number %></code></div>
+          <div class="small text-muted"><%= new Date(b.bill_date).toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'}) %></div>
+        </div>
+        <div class="text-end">
+          <span class="badge status-<%= b.payment_status.toLowerCase() %> me-2"><%= b.payment_status %></span>
+          <button class="btn btn-xs btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#bill_<%= b.bill_id %>">Details</button>
+        </div>
+      </div>
+      <div class="collapse" id="bill_<%= b.bill_id %>">
+        <div class="page-card-body">
+          <div class="row g-3">
+            <div class="col-md-3"><div class="info-item"><label>Total Amount</label><span class="fw-700">₹<%= parseFloat(b.total_amount).toLocaleString() %></span></div></div>
+            <div class="col-md-3"><div class="info-item"><label>Paid Amount</label><span class="fw-700 text-success">₹<%= parseFloat(b.paid_amount).toLocaleString() %></span></div></div>
+            <div class="col-md-3"><div class="info-item"><label>Balance</label><span class="fw-700 text-danger">₹<%= parseFloat(b.balance_amount).toLocaleString() %></span></div></div>
+            <div class="col-md-3"><div class="info-item"><label>Method</label><span><%= b.payment_method || 'Not paid' %></span></div></div>
+            <% if(b.tax_amount>0){ %><div class="col-md-3"><div class="info-item"><label>GST (<%= b.tax_percent %>%)</label><span>₹<%= parseFloat(b.tax_amount).toLocaleString() %></span></div></div><% } %>
+            <% if(b.discount_amount>0){ %><div class="col-md-3"><div class="info-item"><label>Discount</label><span class="text-success">-₹<%= parseFloat(b.discount_amount).toLocaleString() %></span></div></div><% } %>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between align-items-center p-3 border-top bg-light">
+        <span class="small text-muted"><%= b.item_count %> item(s) billed</span>
+        <div class="fw-700">Total: ₹<%= parseFloat(b.total_amount).toLocaleString() %>
+          <% if(b.payment_status!=='Paid'){ %><a href="#" class="btn btn-sm btn-primary ms-2">Pay Now</a><% } %>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+    <% if(!bills.length){ %>
+    <div class="text-center text-muted py-5"><i class="fas fa-receipt fa-3x mb-3 d-block opacity-25"></i><p>No bills found</p></div>
+    <% } %>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/js/main.js"></script>
+</body></html>
